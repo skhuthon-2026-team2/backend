@@ -9,5 +9,5 @@ public class ClubCreateRequest {
     private String name;        // 생성할 동아리 이름
     private String description;
     private String imageUrl;
-    private int maxMembers;
+    private Integer maxMembers;
 }

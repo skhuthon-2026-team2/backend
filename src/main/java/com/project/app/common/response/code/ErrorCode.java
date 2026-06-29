@@ -46,5 +46,5 @@ public enum ErrorCode {
 
     public int getHttpStatusCode() {        // HTTP 상태 코드에서 404와 같은 숫자 값만 반환해 주기 위한 메소드
         return httpStatus.value();
-    }
+    } // 예) 404, 200, 500 같은 숫자
 }
