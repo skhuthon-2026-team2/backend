@@ -3,14 +3,17 @@ package com.project.app.post.domain;
 import com.project.app.club.domain.Club;
 import com.project.app.user.domain.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "posts")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
@@ -39,6 +42,20 @@ public class Post {
     @Column(nullable = false)
     private LocalDate activityDate; // 캘린더 연/월/일 날짜 저장
 
-    @Column(nullable = false)
-    private Boolean isPublic = true; // 보류 기능 (기본값 true 설정)
+    // 생성한 날짜 저장
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    // 🔥 피드 수정용 메서드 (Dirty Checking)
+    public void updatePost(String title, String content, String imageUrl, LocalDate activityDate) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
+        this.activityDate = activityDate;
+    }
 }
