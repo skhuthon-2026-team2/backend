@@ -1,7 +1,6 @@
 package com.project.app.post.domain;
 
-import com.project.app.club.domain.Club;
-import com.project.app.user.domain.User;
+import com.project.app.club.domain.ClubMember;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,15 +19,11 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 어느 동아리에 쓴 피드인가? (외래키)
+    // 🔥 핵심 변경: 유저와 클럽을 각각 묶는 대신, 동아리 멤버 정보 하나만 참조합니다.
+    // 이를 통해 동아리 내 설정한 닉네임, 프로필 이미지, 역할을 전부 다 가져올 수 있습니다.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id", nullable = false)
-    private Club club;
-
-    // 누가 쓴 피드인가? (외래키)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "club_member_id", nullable = false)
+    private ClubMember clubMember;
 
     @Column(nullable = false)
     private String title;

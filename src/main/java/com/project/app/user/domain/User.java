@@ -1,6 +1,7 @@
 package com.project.app.user.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class) // 가입 날짜 자동 생성을 위해 필요합니다.
 public class User {
 
     @Id
@@ -29,9 +29,14 @@ public class User {
     @Column(nullable = false)
     private String imageUrl; // 프로필 이미지 URL (카카오 기본값 혹은 수정된 값)
 
-    @CreatedDate // 엔티티가 생성되어 저장될 때 시간이 자동으로 입력됩니다.
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt; // 최초 가입 날짜 추가
+
+    // 🔥 추가: 영속화 직전 자동 실행 규칙 심기
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     @Builder
     public User(Long kakaoId, String nickname, String imageUrl) {
