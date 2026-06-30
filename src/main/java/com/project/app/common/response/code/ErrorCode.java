@@ -15,14 +15,18 @@ public enum ErrorCode {
     USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 사용자가 없습니다. userId = "),
     CLUB_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 동아리가 없습니다. clubId = "),
     POST_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 피드가 없습니다. postId = "),
+    CLUB_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 동아리의 소속 멤버가 아닙니다."),
 
     /**
      * 400 BAD REQUEST (잘못된 요청)
      */
     VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "유효성 검사에 실패하였습니다 - "),
-    CLUB_MAX_MEMBERS_EXCEEDED_EXCEPTION(HttpStatus.BAD_REQUEST, "동아리 정원(100명)이 초과되어 가입할 수 없습니다."),
+    CLUB_MAX_MEMBERS_EXCEEDED_EXCEPTION(HttpStatus.BAD_REQUEST, "동아리 정원이 초과되어 가입할 수 없습니다."),
     ALREADY_JOINED_CLUB_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 가입했거나 가입 신청 대기 중인 동아리입니다."),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "잘못된 입력값입니다."),
+    CLUB_MEMBER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입한 회원입니다."),
+    INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "초대 코드가 일치하지 않습니다."),
+    CLUB_MAX_MEMBERS_EXCEEDED(HttpStatus.BAD_REQUEST, "동아리의 정원이 초과되어 더 이상 가입할 수 없습니다."),
 
     /**
      * 401 UNAUTHORIZED (인증 실패)

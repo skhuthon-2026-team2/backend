@@ -19,6 +19,7 @@ public enum SuccessCode {
     POST_DELETE_SUCCESS(HttpStatus.OK, "피드가 성공적으로 삭제되었습니다."),
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃이 성공적으로 완료되었습니다."),
     TOKEN_REISSUE_SUCCESS(HttpStatus.OK, "Access Token이 성공적으로 재발급되었습니다."),
+    CLUB_MEMBER_UPDATE_SUCCESS(HttpStatus.OK, "동아리 프로필 수정이 성공적으로 완료되었습니다."),
 
     /**
      * 201 CREATED (생성 성공)

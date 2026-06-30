@@ -2,6 +2,7 @@ package com.project.app.club.application;
 
 import com.project.app.club.api.dto.ClubCreateRequest;
 import com.project.app.club.api.dto.ClubInfoResponse;
+import com.project.app.club.domain.ClubMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class ClubService {
 
     private final ClubRepository clubRepository;
+    private final ClubMemberRepository clubMemberRepository;
 
     /**
      * 동아리 생성
@@ -27,7 +29,7 @@ public class ClubService {
     public void createClub(ClubCreateRequest requestDto) {
 
         // 초대 코드 자동 생성 (초기값 예시)
-        String inviteCode = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String inviteCode = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
         Club club = Club.builder()
                 .name(requestDto.clubName())
@@ -74,8 +76,11 @@ public class ClubService {
                 requestDto.maxMembers()
         );
 
-        // 4. 수정된 엔티티를 응답 규격(DTO)으로 변환하여 반환
-        return ClubInfoResponse.from(club);
+        // 4. 🔥 레포지토리를 통해 가장 정확한 실시간 가입 멤버 수를 카운트해옵니다.
+        long currentMembers = clubMemberRepository.countByClubId(clubId);
+
+        // 5. 수정된 엔티티와 함께 현재 멤버 수를 DTO에 담아 반환
+        return ClubInfoResponse.of(club, currentMembers);
     }
 
     private void validateUpdateRequest(ClubUpdateRequest dto) {

@@ -20,4 +20,7 @@ public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
 
     // 특정 동아리에서 특정 유저 한 명의 정보를 찾기 (추방이나 권한 변경 시 필요)
     Optional<ClubMember> findByClubIdAndUserId(Long clubId, Long userId);
+
+    // 특정 동아리에 가입한 멤버 총 수를 구하는 쿼리 메서드
+    long countByClubId(Long clubId);
 }

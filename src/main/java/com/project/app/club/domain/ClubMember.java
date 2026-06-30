@@ -2,6 +2,7 @@ package com.project.app.club.domain;
 
 import com.project.app.user.domain.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,4 +35,21 @@ public class ClubMember {
     @Enumerated(EnumType.STRING) // DB에 문자열("OWNER", "MEMBER")로 저장
     @Column(nullable = false)
     private ClubRole role;
+
+    @Builder
+    public ClubMember(Club club, User user, String nickname, String profileImage, ClubRole role) {
+        this.club = club;
+        this.user = user;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.role = role;
+    }
+
+    // 🔥 3번 요구사항: 동아리 내 프로필(닉네임) 수정 메서드
+    public void updateProfile(String nickname) {
+        if (nickname != null && !nickname.isBlank()) {
+            this.nickname = nickname;
+        }
+    }
+
 }
