@@ -25,6 +25,7 @@ public enum SuccessCode {
     LOGIN_SUCCESS(HttpStatus.CREATED, "로그인이 성공적으로 완료되었습니다."),
     CLUB_SAVE_SUCCESS(HttpStatus.CREATED, "동아리가 성공적으로 개설되었습니다."),
     CLUB_JOIN_SUCCESS(HttpStatus.CREATED, "동아리 가입 신청이 성공적으로 완료되었습니다."),
+    CLUB_UPDATE_SUCCESS(HttpStatus.OK, "동아리 정보가 성공적으로 수정되었습니다."),
     POST_SAVE_SUCCESS(HttpStatus.CREATED, "피드가 성공적으로 등록되었습니다.");
 
 

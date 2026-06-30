@@ -18,7 +18,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String kakaoId;
+    private String kakaoId; // 카카오 고유 식별 번호
 
     @Column(nullable = true) // 후순위 (Null 허용)
     private String email;

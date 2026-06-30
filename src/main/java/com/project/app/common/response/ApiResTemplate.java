@@ -14,4 +14,9 @@ public record ApiResTemplate<T>(
     public static <T> ApiResTemplate<T> success(int status, String message, T data) {
         return new ApiResTemplate<>(status, message, data);
     }
+
+    // 데이터 없는 성공 응답
+    public static <T> ApiResTemplate<T> successWithNoContent(int status, String message) {
+        return new ApiResTemplate<>(status, message, null);
+    }
 }

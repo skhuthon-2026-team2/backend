@@ -1,11 +1,12 @@
 package com.project.app.club.api.dto;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record ClubCreateRequest(
+public record ClubUpdateRequest(
+
+        @NotNull
         @NotBlank(message = "동아리 이름은 필수입니다.")
         String clubName,
 

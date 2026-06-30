@@ -22,6 +22,7 @@ public enum ErrorCode {
     VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "유효성 검사에 실패하였습니다 - "),
     CLUB_MAX_MEMBERS_EXCEEDED_EXCEPTION(HttpStatus.BAD_REQUEST, "동아리 정원(100명)이 초과되어 가입할 수 없습니다."),
     ALREADY_JOINED_CLUB_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 가입했거나 가입 신청 대기 중인 동아리입니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "잘못된 입력값입니다."),
 
     /**
      * 401 UNAUTHORIZED (인증 실패)
@@ -46,5 +47,5 @@ public enum ErrorCode {
 
     public int getHttpStatusCode() {        // HTTP 상태 코드에서 404와 같은 숫자 값만 반환해 주기 위한 메소드
         return httpStatus.value();
-    }
+    } // 예) 404, 200, 500 같은 숫자
 }

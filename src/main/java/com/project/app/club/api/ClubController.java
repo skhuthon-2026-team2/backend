@@ -1,18 +1,16 @@
 package com.project.app.club.api;
 
-import com.project.app.club.api.dto.ClubCreateRequest;
-import com.project.app.club.api.dto.ClubInfoResponse;
-import com.project.app.club.application.ClubService;
+import com.project.app.common.response.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import com.project.app.common.response.ApiResTemplate;
+import com.project.app.club.api.dto.ClubInfoResponse;
+import com.project.app.club.api.dto.ClubCreateRequest;
+import com.project.app.club.api.dto.ClubUpdateRequest;
+import com.project.app.club.application.ClubService;
 
-@Tag(name = "Club", description = "동아리 관리 API")
 @RestController
 @RequestMapping("/api/clubs")
 @RequiredArgsConstructor
@@ -20,13 +18,36 @@ public class ClubController {
 
     private final ClubService clubService;
 
-    @Operation(summary = "동아리 생성", description = "새로운 동아리를 생성하고 고유한 무작위 초대 코드를 발급합니다.")
+    /**
+     * 동아리 생성 API
+     */
     @PostMapping
-    public ResponseEntity<ClubInfoResponse> createClub(@RequestBody ClubCreateRequest request) {
-        // 서비스 단을 거쳐 생성 완료된 ClubInfoResponse 객체를 받아옴
-        ClubInfoResponse response = clubService.createClub(request);
+    @Operation(summary = "동아리 생성", description = "새로운 동아리를 생성합니다.")
+    public ApiResTemplate<Void> createClub(@RequestBody @Valid ClubCreateRequest clubCreateRequest) {
+        clubService.createClub(clubCreateRequest);
+        return ApiResTemplate.successWithNoContent(SuccessCode.CLUB_SAVE_SUCCESS.getHttpStatusCode(), SuccessCode.CLUB_SAVE_SUCCESS.getMessage());
+    }
 
-        // 프론트엔드에 200 OK 상태 코드와 함께 생성된 동아리 정보(응답 객체)를 반환
-        return ResponseEntity.ok(response);
+    /**
+     * 동아리 상세 조회 API
+     */
+    @GetMapping("/{clubId}")
+    @Operation(summary = "동아리 상세 조회", description = "동아리 ID를 통해 세부 정보를 조회합니다.")
+    public ApiResTemplate<ClubInfoResponse> getClub(@PathVariable Long clubId) {
+        ClubInfoResponse response = clubService.getClub(clubId);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(),SuccessCode.GET_SUCCESS.getMessage(), response);
+    }
+
+    /**
+     * 동아리 정보 수정 API
+     */
+    @PutMapping("/{clubId}")
+    @Operation(summary = "동아리 정보 수정", description = "동아리의 이름, 설명, 이미지, 최대 정원을 수정합니다.")
+    public ApiResTemplate<ClubInfoResponse> updateClub(
+            @PathVariable Long clubId,
+            @RequestBody @Valid ClubUpdateRequest clubUpdateRequest) {
+
+        ClubInfoResponse response = clubService.updateClub(clubId, clubUpdateRequest);
+        return ApiResTemplate.successWithNoContent(SuccessCode.CLUB_UPDATE_SUCCESS.getHttpStatusCode(), SuccessCode.CLUB_UPDATE_SUCCESS.getMessage());
     }
 }

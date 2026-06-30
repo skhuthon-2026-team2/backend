@@ -14,9 +14,9 @@ public class BusinessException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    // 에러 메시지 뒤에 ID나 상세 내용을 붙이고 싶을 때 (예: "해당 사용자가 없습니다. userId = 1")
+    // 사용자가 지정한 메시지를 리턴
     public BusinessException(ErrorCode errorCode, String detail) {
-        super(errorCode.getMessage() + detail);
+        super(detail);
         this.errorCode = errorCode;
     }
 }
