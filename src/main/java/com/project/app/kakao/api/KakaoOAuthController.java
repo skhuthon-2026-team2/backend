@@ -25,8 +25,9 @@ public class KakaoOAuthController {
 
         // 2. DTO에서 kakaoId와 profileImageUrl을 각각 꺼내어 로그인/회원가입 진행
         TokenResponse tokenResponse = authService.loginOrSignUp(
-                kakaoUserInfo.getId(),
-                kakaoUserInfo.getProfileImageUrl()
+                kakaoUserInfo.id(),
+                kakaoUserInfo.kakaoAccount().profile().profileImageUrl(),
+                kakaoUserInfo.kakaoAccount().profile().nickname() // 닉네임 추가 전달!
         );
 
         // 3. 공통 응답 바구니(ApiResTemplate) 및 성공 코드(SuccessCode) 양식에 맞춰 프론트엔드로 반환
