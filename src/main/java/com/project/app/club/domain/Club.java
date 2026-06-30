@@ -29,7 +29,7 @@ public class Club {
     private String inviteCode;
 
     @Column(nullable = false)
-    private Integer maxMembers ;
+    private Integer maxMembers;
 
     // 운영자가 동아리 관리 페이지에서 수정을 쉽게 하기 위한 메서드 (제미나이가 추천해줘서 추가했습니다)
     public void updateClubSettings(String name, String description, String imageUrl, Integer maxMembers) {

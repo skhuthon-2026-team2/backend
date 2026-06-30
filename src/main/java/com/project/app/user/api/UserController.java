@@ -8,9 +8,12 @@ import com.project.app.user.api.dto.UserProfileResponse;
 import com.project.app.user.api.dto.UserProfileUpdateRequest;
 import com.project.app.user.application.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "User", description = "유저 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")

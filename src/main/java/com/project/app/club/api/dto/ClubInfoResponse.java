@@ -8,8 +8,20 @@ public record ClubInfoResponse(
         String description,
         String inviteCode,
         String clubImageUrl,
-        Integer maxMembers
+        Integer maxMembers,
+        long currentMembers // 현재 인원 수
 ) {
+    public static ClubInfoResponse of(Club club, long currentMembers) {
+        return new ClubInfoResponse(
+                club.getId(),
+                club.getName(),
+                club.getDescription(),
+                club.getInviteCode(),
+                club.getImageUrl(),
+                club.getMaxMembers(),
+                currentMembers
+        );
+    }
     public static ClubInfoResponse from(Club club) {
         return new ClubInfoResponse(
                 club.getId(),
@@ -17,7 +29,8 @@ public record ClubInfoResponse(
                 club.getDescription(),
                 club.getInviteCode(),
                 club.getImageUrl(),
-                club.getMaxMembers()
+                club.getMaxMembers(),
+                0L
         );
     }
 }

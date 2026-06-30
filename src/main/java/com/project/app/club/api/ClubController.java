@@ -2,6 +2,7 @@ package com.project.app.club.api;
 
 import com.project.app.common.response.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import com.project.app.club.api.dto.ClubCreateRequest;
 import com.project.app.club.api.dto.ClubUpdateRequest;
 import com.project.app.club.application.ClubService;
 
+@Tag(name = "Club", description = "동아리 관련 API")
 @RestController
 @RequestMapping("/api/clubs")
 @RequiredArgsConstructor
