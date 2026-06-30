@@ -20,16 +20,22 @@ public class AuthService {
      * 카카오 ID를 검사하여 가입 혹은 로그인을 처리하고 토큰을 발급합니다.
      */
     @Transactional
-    public TokenResponse loginOrSignUp(Long kakaoId) {
-        String stringKakaoId = String.valueOf(kakaoId);
+    public TokenResponse loginOrSignUp(Long kakaoId, String kakaoImageUrl) {
 
         // 1. DB에서 해당 카카오 ID 유저가 있는지 검색
-        User user = userRepository.findByKakaoId(stringKakaoId)
+        User user = userRepository.findByKakaoId(kakaoId)
+                .map(existingUser -> {
+                    // 이미 가입된 유저라면 프로필 이미지 변경 시 업데이트
+                    existingUser.updateProfileImage(kakaoImageUrl);
+                    return existingUser;
+                })
                 .orElseGet(() -> {
                     // 2. 없다면 신규 유저로 등록 (자동 회원가입)
-                    User newUser = new User();
-                    newUser.setKakaoId(stringKakaoId);
-                    return userRepository.save(newUser); // DB에 영구 저장
+                    User newUser = User.builder()
+                            .kakaoId(kakaoId)
+                            .imageUrl(kakaoImageUrl != null ? kakaoImageUrl : "default_image_url")
+                            .build();
+                    return userRepository.save(newUser);
                 });
 
         // 3. 저장되거나 조회된 유저의 서비스 고유 고유번호(PK)로 JWT 토큰 생성

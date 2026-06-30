@@ -1,6 +1,7 @@
 package com.project.app.user.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,14 +19,23 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String kakaoId; // 카카오 고유 식별 번호
-
-    @Column(nullable = true) // 후순위 (Null 허용)
-    private String email;
-
-    @Column(nullable = true) // 후순위 (Null 허용)
-    private String phone;
+    private Long kakaoId; // 카카오 고유 식별 번호
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now(); // 가입 일시 자동 저장
+    private String imageUrl; // 프로필 이미지 URL (카카오 기본값 혹은 수정된 값)
+
+    @Builder
+    public User(Long kakaoId, String imageUrl) {
+        this.kakaoId = kakaoId;
+        this.imageUrl = imageUrl;
+    }
+
+    /**
+     * 프로필 이미지 수정 기능 (요구사항: 이미지만 수정 가능)
+     */
+    public void updateProfileImage(String imageUrl) {
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            this.imageUrl = imageUrl;
+        }
+    }
 }
