@@ -33,13 +33,14 @@ public class KakaoOAuthService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     /**
-     * 카카오 로그인 전체 흐름 제어 및 카카오 고유 ID 반환
+     * 카카오 로그인 전체 흐름 제어 및 카카오 유저 정보(ID, 이미지 등) DTO 반환
+     * (기존 getKakaoUserId를 컨트롤러 스펙에 맞춰 수정했습니다)
      */
-    public Long getKakaoUserId(String code) {
+    public KakaoUserInfoResponse getKakaoUserProfile(String code) {
         // 1. 인가 코드로 카카오 Access Token 받아오기
         String kakaoAccessToken = getKakaoAccessToken(code);
 
-        // 2. Access Token으로 카카오 유저 정보 가져오기
+        // 2. Access Token으로 카카오 유저 정보 DTO 가져오기
         return getKakaoUserInfo(kakaoAccessToken);
     }
 
@@ -72,7 +73,7 @@ public class KakaoOAuthService {
     /**
      * [Step 2] 카카오 토큰으로 유저 정보(ID) 조회
      */
-    private Long getKakaoUserInfo(String accessToken) {
+    private KakaoUserInfoResponse getKakaoUserInfo(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken); // 헤더에 Bearer 토큰 주입
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -83,7 +84,7 @@ public class KakaoOAuthService {
             ResponseEntity<KakaoUserInfoResponse> response = restTemplate.exchange(
                     userInfoUri, HttpMethod.POST, request, KakaoUserInfoResponse.class
             );
-            return response.getBody().getId();
+            return response.getBody();
         } catch (Exception e) {
             log.error("카카오 유저 정보 조회 실패: {}", e.getMessage());
             throw new RuntimeException("카카오 유저 정보를 가져오는데 실패했습니다.");

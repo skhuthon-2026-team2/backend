@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class KakaoUserInfoResponse {
 
-    // 카카오가 발급하는 유저 고유 식별자 번호
     @JsonProperty("id")
-    private Long id;
+    private Long id;                  // 카카오 고유 ID
 
-    // 이메일이나 프로필 정보를 더 가져오고 싶다면 여기에 kakao_account 구조를 추가하면 됩니다.
-    // 현재는 고유 ID(kakao_id)만 필수로 쓰므로 이대로 간결하게 시작합니다.
+    private String profileImageUrl;   // 카카오 프로필 이미지 URL
+
+    // 만약 카카오에서 데이터 받을 때 필드명이 다르다면 @JsonProperty 등을 사용해야 할 수 있습니다.
 }

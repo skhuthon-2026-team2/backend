@@ -14,6 +14,7 @@ public enum SuccessCode {
      */
     GET_SUCCESS(HttpStatus.OK, "성공적으로 조회했습니다."),
     USER_UPDATE_SUCCESS(HttpStatus.OK, "사용자 프로필이 성공적으로 수정되었습니다."),
+    USER_LOAD_SUCCESS(HttpStatus.OK, "사용자 프로필을 성공적으로 조회했습니다."),
     POST_UPDATE_SUCCESS(HttpStatus.OK, "피드가 성공적으로 수정되었습니다."),
     POST_DELETE_SUCCESS(HttpStatus.OK, "피드가 성공적으로 삭제되었습니다."),
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃이 성공적으로 완료되었습니다."),
