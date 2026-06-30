@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class ClubManagementController {
     @Operation(summary = "동아리 멤버 조회", description = "특정 동아리의 전체 회원 목록을 페이징하여 조회합니다.")
     public ApiResTemplate<Page<ClubMemberResponse>> getClubMembers(
             @PathVariable("clubId") Long clubId,
-            Pageable pageable) {
+            @ParameterObject Pageable pageable) {
 
         Page<ClubMemberResponse> response = clubManagementService.getClubMembers(clubId, pageable);
         return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "멤버 목록 조회가 완료되었습니다.", response);
