@@ -20,13 +20,13 @@ public class AuthService {
      * 카카오 ID를 검사하여 가입 혹은 로그인을 처리하고 토큰을 발급합니다.
      */
     @Transactional
-    public TokenResponse loginOrSignUp(Long kakaoId, String kakaoImageUrl) {
+    public TokenResponse loginOrSignUp(Long kakaoId, String kakaoImageUrl, String nickname) {
 
         // 1. DB에서 해당 카카오 ID 유저가 있는지 검색
         User user = userRepository.findByKakaoId(kakaoId)
                 .map(existingUser -> {
                     // 이미 가입된 유저라면 프로필 이미지 변경 시 업데이트
-                    existingUser.updateProfileImage(kakaoImageUrl);
+                    existingUser.updateProfile(nickname, kakaoImageUrl);
                     return existingUser;
                 })
                 .orElseGet(() -> {
@@ -34,6 +34,7 @@ public class AuthService {
                     User newUser = User.builder()
                             .kakaoId(kakaoId)
                             .imageUrl(kakaoImageUrl != null ? kakaoImageUrl : "default_image_url")
+                            .nickname(nickname)
                             .build();
                     return userRepository.save(newUser);
                 });
