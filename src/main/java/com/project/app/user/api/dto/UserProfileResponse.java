@@ -9,9 +9,15 @@ public record UserProfileResponse(
         Long kakaoId,
         String imageUrl,
         String nickname,
-        LocalDateTime createAt
+        LocalDateTime createdAt // 🛠️ createAt -> createdAt 으로 수정
 ) {
     public static UserProfileResponse from(User user) {
-        return new UserProfileResponse(user.getId(), user.getKakaoId(), user.getImageUrl(), user.getNickname(), user.getCreatedAt());
+        return new UserProfileResponse(
+                user.getId(),
+                user.getKakaoId(),
+                user.getImageUrl(),
+                user.getNickname(),
+                user.getCreatedAt()
+        );
     }
 }
