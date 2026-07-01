@@ -4,6 +4,7 @@ import com.project.app.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "피드(게시글) 상세 조회 응답 DTO")
 public record PostDetailResponse(
@@ -29,8 +30,10 @@ public record PostDetailResponse(
         @Schema(description = "피드 내용", example = "다들 반가웠어요! 다음에도 또 봐요~")
         String content,
 
-        @Schema(description = "업로드한 활동 이미지 URL", example = "https://dummyimage.com/post.jpg")
-        String imageUrl,
+        @Schema(description = "업로드한 활동 이미지 URL",
+                examples = {"https://dummyimage.com/post1.jpg", "https://dummyimage.com/post2.jpg"}
+        )
+        List<String> imageUrls,
 
         @Schema(description = "실제 활동 날짜", example = "2023-11-20")
         LocalDate activityDate,
@@ -47,7 +50,7 @@ public record PostDetailResponse(
                 post.getClubMember().getProfileImage(),  // 동아리 전용 이미지
                 post.getTitle(),
                 post.getContent(),
-                post.getImageUrl(),
+                post.getImages(),
                 post.getActivityDate(),
                 post.getCreatedAt()
         );

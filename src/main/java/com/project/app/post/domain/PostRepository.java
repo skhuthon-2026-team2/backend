@@ -26,5 +26,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     void updateClubMemberToNull(@Param("clubMemberId") Long clubMemberId);
 
     // 💡 특정 동아리 안에서, 지정된 시간(하루의 시작과 끝) 사이에 생성된 게시글 목록을 조회합니다. (두 번째 사진 날짜 필터링용)
-    List<Post> findAllByClubIdAndCreatedAtBetween(Long clubId, LocalDateTime start, LocalDateTime end);
+    // 💡 JPQL을 사용해 clubMember 내부의 club.id를 명확히 짚어줍니다.
+    @Query("SELECT p FROM Post p WHERE p.clubMember.club.id = :clubId AND p.createdAt BETWEEN :start AND :end")
+    List<Post> findAllByClubIdAndCreatedAtBetween(
+            @Param("clubId") Long clubId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
 }

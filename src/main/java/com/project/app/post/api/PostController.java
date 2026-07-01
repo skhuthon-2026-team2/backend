@@ -29,7 +29,7 @@ public class PostController {
             @RequestBody @Valid PostCreateRequest requestDto) {
 
         // 💡 프론트 테스트를 위해 실제 서비스 로직은 잠시 주석 처리합니다.
-        // postService.createPost(clubId, userId, requestDto);
+        postService.createPost(clubId, userId, requestDto);
         return ApiResTemplate.successWithNoContent(SuccessCode.POST_SAVE_SUCCESS.getHttpStatusCode(), SuccessCode.POST_SAVE_SUCCESS.getMessage());
     }
 
@@ -40,7 +40,8 @@ public class PostController {
             @RequestParam("userId") Long userId,
             @RequestBody @Valid PostCreateRequest requestDto) {
 
-        // postService.updatePost(postId, userId, requestDto);
+        // 밑에 주석처리
+        postService.updatePost(postId, userId, requestDto);
         return ApiResTemplate.successWithNoContent(SuccessCode.POST_UPDATE_SUCCESS.getHttpStatusCode(), SuccessCode.POST_UPDATE_SUCCESS.getMessage());
     }
 
@@ -50,11 +51,12 @@ public class PostController {
             @PathVariable("clubId") Long clubId,
             @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
 
-        // Page<PostDetailResponse> response = postService.getClubPosts(clubId, pageable);
+        Page<PostDetailResponse> response = postService.getClubPosts(clubId, pageable);
 
         // 🛠️ 에러가 나지 않도록 일단 빈 페이지(Empty Page)를 반환합니다.
-        Page<PostDetailResponse> dummyResponse = Page.empty(pageable);
-        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "동아리 피드 조회가 완료되었습니다.", dummyResponse);
+        // Page<PostDetailResponse> dummyResponse = Page.empty(pageable);
+        // return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "동아리 피드 조회가 완료되었습니다.", dummyResponse);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "동아리 피드 조회가 완료되었습니다.", response);
     }
 
     @GetMapping("/posts/user")
@@ -63,21 +65,23 @@ public class PostController {
             @RequestParam("userId") Long userId,
             @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
 
-        // Page<PostDetailResponse> response = postService.getUserPosts(userId, pageable);
+        Page<PostDetailResponse> response = postService.getUserPosts(userId, pageable);
 
-        Page<PostDetailResponse> dummyResponse = Page.empty(pageable);
-        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", dummyResponse);
+        // Page<PostDetailResponse> dummyResponse = Page.empty(pageable);
+        // return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", dummyResponse);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", response);
     }
 
     @GetMapping("/posts/{postId}")
     @Operation(summary = "피드 상세 조회", description = "피드 식별 ID를 이용하여 상세 본문을 1건 조회합니다. (더미)")
     public ApiResTemplate<PostDetailResponse> getPostDetail(@PathVariable("postId") Long postId) {
 
-        // PostDetailResponse response = postService.getPostDetail(postId);
+        PostDetailResponse response = postService.getPostDetail(postId);
 
         // 🛠️ 아직 DTO 구조를 모르므로 null을 반환합니다. 구조가 정해지면 임시 데이터를 넣을 수 있습니다.
-        PostDetailResponse dummyResponse = null;
-        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "피드 상세 조회가 완료되었습니다.", dummyResponse);
+        // PostDetailResponse dummyResponse = null;
+        // return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "피드 상세 조회가 완료되었습니다.", dummyResponse);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "피드 상세 조회가 완료되었습니다.", response);
     }
 
     @DeleteMapping("/posts/{postId}")
@@ -86,7 +90,7 @@ public class PostController {
             @PathVariable("postId") Long postId,
             @RequestParam("userId") Long userId) {
 
-        // postService.deletePost(postId, userId);
+        postService.deletePost(postId, userId);
         return ApiResTemplate.successWithNoContent(SuccessCode.POST_DELETE_SUCCESS.getHttpStatusCode(), SuccessCode.POST_DELETE_SUCCESS.getMessage());
     }
 }
