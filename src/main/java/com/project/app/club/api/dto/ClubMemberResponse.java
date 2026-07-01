@@ -4,7 +4,7 @@ import com.project.app.club.domain.ClubMember;
 import com.project.app.club.domain.ClubRole;
 
 public record ClubMemberResponse(
-        Long id,
+        Long clubMemberId,
         Long userId,
         String nickname,
         String profileImage,

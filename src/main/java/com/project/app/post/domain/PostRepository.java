@@ -3,6 +3,9 @@ package com.project.app.post.domain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -13,4 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 특정 유저가 작성한 피드 목록 조회 (ClubMember를 거쳐 userId 확인)
     Page<Post> findAllByClubMemberUserId(Long userId, Pageable pageable);
+
+    // 멤버 삭제 시 외래키(club_member_id)를 null로 밀어버리는 쿼리
+    @Modifying(clearAutomatically = true) // 쿼리 실행 후 영속성 컨텍스트를 자동으로 비워줍니다.
+    @Query("UPDATE Post p SET p.clubMember = null WHERE p.clubMember.id = :clubMemberId")
+    void updateClubMemberToNull(@Param("clubMemberId") Long clubMemberId);
 }

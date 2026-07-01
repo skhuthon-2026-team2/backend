@@ -22,7 +22,7 @@ public class Post {
     // 🔥 핵심 변경: 유저와 클럽을 각각 묶는 대신, 동아리 멤버 정보 하나만 참조합니다.
     // 이를 통해 동아리 내 설정한 닉네임, 프로필 이미지, 역할을 전부 다 가져올 수 있습니다.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_member_id", nullable = false)
+    @JoinColumn(name = "club_member_id", nullable = true)
     private ClubMember clubMember;
 
     @Column(nullable = false)

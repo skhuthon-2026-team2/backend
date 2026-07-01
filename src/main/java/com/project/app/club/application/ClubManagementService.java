@@ -10,6 +10,7 @@ import com.project.app.club.domain.ClubRole;
 import com.project.app.club.domain.ClubRepository;
 import com.project.app.common.exception.BusinessException;
 import com.project.app.common.response.code.ErrorCode;
+import com.project.app.post.domain.PostRepository;
 import com.project.app.user.domain.User;
 import com.project.app.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class ClubManagementService {
     private final ClubMemberRepository clubMemberRepository;
     private final ClubRepository clubRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     /**
      * 1. 특정 동아리의 멤버 목록 조회 (페이징)
@@ -38,6 +40,38 @@ public class ClubManagementService {
 
         Page<ClubMember> members = clubMemberRepository.findAllByClubId(clubId, pageable);
         return members.map(ClubMemberResponse::from);
+    }
+
+    /**
+     * 2. 특정 동아리의 멤버 1명 상세 조회 (clubMemberId 기준)
+     */
+    public ClubMemberResponse getClubMember(Long clubId, Long clubMemberId) {
+        validateClubExists(clubId);
+
+        // 레포지토리에 기본 탑재된 findById 활용 후, 해당 동아리의 멤버가 맞는지 교차 검증
+        ClubMember member = clubMemberRepository.findById(clubMemberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CLUB_MEMBER_NOT_FOUND, "존재하지 않는 동아리 멤버입니다."));
+
+        validateMemberBelongsToClub(member, clubId);
+
+        return ClubMemberResponse.from(member);
+    }
+
+    /**
+     * 3. 특정 동아리의 멤버 삭제 (추방/탈퇴 - clubMemberId 기준)
+     */
+    @Transactional
+    public void deleteClubMember(Long clubId, Long clubMemberId) {
+        validateClubExists(clubId);
+
+        ClubMember member = clubMemberRepository.findById(clubMemberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CLUB_MEMBER_NOT_FOUND, "존재하지 않는 동아리 멤버입니다."));
+
+        validateMemberBelongsToClub(member, clubId);
+
+        postRepository.updateClubMemberToNull(clubMemberId);
+
+        clubMemberRepository.delete(member);
     }
 
     /**
@@ -96,4 +130,19 @@ public class ClubManagementService {
         // 🔥 수정 포인트: 엔티티 스펙에 맞춰 nickname 인자 하나만 넘기도록 수정!
         clubMember.updateProfile(requestDto.nickname());
     }
+
+    // [검증 가드 1] 동아리 존재 여부 확인
+    private void validateClubExists(Long clubId) {
+        if (!clubRepository.existsById(clubId)) {
+            throw new BusinessException(ErrorCode.CLUB_NOT_FOUND_EXCEPTION, ErrorCode.CLUB_NOT_FOUND_EXCEPTION.getMessage() + clubId);
+        }
+    }
+
+    // [검증 가드 2] 조회된 멤버가 요청 경로의 동아리에 속해있는지 검증 (보안 강화)
+    private void validateMemberBelongsToClub(ClubMember member, Long clubId) {
+        if (!member.getClub().getId().equals(clubId)) {
+            throw new BusinessException(ErrorCode.CLUB_MEMBER_NOT_FOUND, "해당 동아리에 소속된 멤버가 아닙니다.");
+        }
+    }
+
 }
