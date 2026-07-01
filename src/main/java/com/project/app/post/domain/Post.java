@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -32,25 +34,58 @@ public class Post {
     private String content;
 
     @Column(nullable = false)
-    private String imageUrl;
-
-    @Column(nullable = false)
     private LocalDate activityDate; // 캘린더 연/월/일 날짜 저장
 
     // 생성한 날짜 저장
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // 사진 URL 여러 장을 저장하기 위한 값 타입 컬렉션 설정
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "post_images", // 일대다 관계로 쪼개져서 생성될 자식 테이블 이름
+            joinColumns = @JoinColumn(name = "post_id") // 외래키 매핑
+    )
+    @Column(name = "image_url", nullable = false) // 저장될 컬럼명
+    private List<String> images = new ArrayList<>();
+
+    // 타임라인과의 연관관계 매핑 (하나의 타임라인에 여러 게시글이 들어감)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "timeline_id", nullable = true) // 타임라인에 지정되지 않은 일반 게시글도 있으므로 true
+    private Timeline timeline;
+
+    //  Timeline 엔티티의 편의 메서드(addPost)에서 호출할 연관관계 설정 메서드
+    public void assignTimeline(Timeline timeline) {
+        this.timeline = timeline;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    // 🔥 피드 수정용 메서드 (Dirty Checking)
-    public void updatePost(String title, String content, String imageUrl, LocalDate activityDate) {
+    @Builder
+    public Post(String title, String content, ClubMember clubMember, List<String> images) {
         this.title = title;
         this.content = content;
-        this.imageUrl = imageUrl;
-        this.activityDate = activityDate;
+        this.clubMember = clubMember;
+        this.createdAt = LocalDateTime.now();
+        if (images != null) {
+            this.images = images;
+        }
     }
+
+
+    public void updatePost(String title, String content, List<String> imageUrls, LocalDate activityDate) {
+        this.title = title;
+        this.content = content;
+        this.activityDate = activityDate;
+
+        // 이미지 리스트가 들어왔을 경우 컬렉션 내용 초기화 후 재할당
+        if (imageUrls != null) {
+            this.images.clear();
+            this.images.addAll(imageUrls);
+        }
+    }
+
 }

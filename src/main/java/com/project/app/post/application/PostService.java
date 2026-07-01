@@ -35,7 +35,7 @@ public class PostService {
                 .clubMember(clubMember) // 수정한 단방향 연관계 주입
                 .title(requestDto.title())
                 .content(requestDto.content())
-                .imageUrl(requestDto.imageUrl())
+                .images(requestDto.imageUrls())
                 .activityDate(requestDto.activityDate())
                 .build();
 
@@ -60,7 +60,7 @@ public class PostService {
         post.updatePost(
                 requestDto.title(),
                 requestDto.content(),
-                requestDto.imageUrl(),
+                requestDto.imageUrls(),
                 requestDto.activityDate()
         );
     }

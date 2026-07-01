@@ -17,6 +17,7 @@ public enum ErrorCode {
     POST_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 피드가 없습니다. postId = "),
     POST_NOT_FOUND_FEED(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
     CLUB_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 동아리의 소속 멤버가 아닙니다."),
+    TIMELINE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 타임라인입니다."),
 
     /**
      * 400 BAD REQUEST (잘못된 요청)
@@ -28,6 +29,7 @@ public enum ErrorCode {
     CLUB_MEMBER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입한 회원입니다."),
     INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "초대 코드가 일치하지 않습니다."),
     CLUB_MAX_MEMBERS_EXCEEDED(HttpStatus.BAD_REQUEST, "동아리의 정원이 초과되어 더 이상 가입할 수 없습니다."),
+    UNAUTHORIZED_ACCESS(HttpStatus.BAD_REQUEST, "해당 동아리의 타임라인이 아닙니다."),
 
     /**
      * 401 UNAUTHORIZED (인증 실패)
