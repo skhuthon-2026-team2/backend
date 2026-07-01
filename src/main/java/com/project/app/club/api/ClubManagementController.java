@@ -34,6 +34,27 @@ public class ClubManagementController {
         Page<ClubMemberResponse> response = clubManagementService.getClubMembers(clubId, pageable);
         return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "멤버 목록 조회가 완료되었습니다.", response);
     }
+    // 2. 동아리 멤버 1명 상세 조회 (clubMemberId 기준)
+    @GetMapping("/{clubMemberId}")
+    @Operation(summary = "동아리 멤버 1명 조회", description = "동아리 멤버 ID를 통해 특정 회원 한 명을 조회합니다.")
+    public ApiResTemplate<ClubMemberResponse> getClubMember(
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("clubMemberId") Long clubMemberId) {
+
+        ClubMemberResponse response = clubManagementService.getClubMember(clubId, clubMemberId);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "멤버 상세 조회가 완료되었습니다.", response);
+    }
+
+    // 3. 동아리 멤버 삭제 (추방/탈퇴 - clubMemberId 기준)
+    @DeleteMapping("/{clubMemberId}")
+    @Operation(summary = "동아리 멤버 삭제", description = "특정 동아리에서 해당 멤버를 삭제(탈퇴/추방)합니다.")
+    public ApiResTemplate<Void> deleteClubMember(
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("clubMemberId") Long clubMemberId) {
+
+        clubManagementService.deleteClubMember(clubId, clubMemberId);
+        return ApiResTemplate.success(SuccessCode.CLUB_MEMBER_DELETE_SUCCESS.getHttpStatusCode(), SuccessCode.CLUB_MEMBER_DELETE_SUCCESS.getMessage(), null);
+    }
 
     // 동아리 가입
     @PostMapping("/join")
