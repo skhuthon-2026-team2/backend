@@ -5,10 +5,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
+
+    List<ClubMember> findAllByUserId(Long userId);
+
     // 특정 유저가 가입한 동아리 목록 조회 (페이징 적용)
     Page<ClubMember> findAllByUserId(Long userId, Pageable pageable);
 

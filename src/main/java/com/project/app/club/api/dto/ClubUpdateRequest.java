@@ -6,16 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record ClubUpdateRequest(
 
-        @NotNull
-        @NotBlank(message = "동아리 이름은 필수입니다.")
-        String clubName,
-
-        @NotBlank(message = "동아리 설명은 필수입니다.")
-        String description,
-
-        @NotBlank(message = "동아리 이미지 URL은 필수입니다.")
-        String clubImageUrl,
-
         @Min(value = 1, message = "동아리 최소 정원은 1명입니다.")
         Integer maxMembers
 ) {

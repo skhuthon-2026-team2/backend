@@ -1,5 +1,9 @@
 package com.project.app.post.api;
 
+import com.project.app.club.api.dto.ClubInfoResponse;
+import com.project.app.club.api.dto.ClubMemberResponse;
+import com.project.app.club.application.ClubManagementService;
+import com.project.app.club.application.ClubService;
 import com.project.app.post.api.dto.PostCreateRequest;
 import com.project.app.post.api.dto.PostDetailResponse;
 import com.project.app.post.application.PostService;
@@ -9,19 +13,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Post", description = "피드(게시글) 관련 API")
+@Tag(name = "피드", description = "피드(게시글) 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class PostController {
 
     private final PostService postService;
+    private final ClubService clubService;
+    private final ClubManagementService clubManagementService;
 
-    @PostMapping("/clubs/{clubId}/posts")
+    @PostMapping("/clubs/{clubId}")
     @Operation(summary = "피드 생성", description = "동아리 소속 인증 절차를 거친 후 새로운 피드를 작성합니다. (더미)")
     public ApiResTemplate<Void> createPost(
             @PathVariable("clubId") Long clubId,
@@ -49,7 +56,7 @@ public class PostController {
     @Operation(summary = "동아리별 피드 목록 조회", description = "특정 동아리의 전체 피드 리스트를 최신순으로 페이징 조회합니다. (더미)")
     public ApiResTemplate<Page<PostDetailResponse>> getClubPosts(
             @PathVariable("clubId") Long clubId,
-            @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+            @ParameterObject Pageable pageable) {
 
         Page<PostDetailResponse> response = postService.getClubPosts(clubId, pageable);
 
@@ -59,18 +66,7 @@ public class PostController {
         return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "동아리 피드 조회가 완료되었습니다.", response);
     }
 
-    @GetMapping("/posts/user")
-    @Operation(summary = "유저별 피드 목록 조회", description = "로그인한 유저 본인이 여러 동아리에서 썼던 전체 피드 내역을 한눈에 페이징 조회합니다. (더미)")
-    public ApiResTemplate<Page<PostDetailResponse>> getUserPosts(
-            @RequestParam("userId") Long userId,
-            @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
 
-        Page<PostDetailResponse> response = postService.getUserPosts(userId, pageable);
-
-        // Page<PostDetailResponse> dummyResponse = Page.empty(pageable);
-        // return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", dummyResponse);
-        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", response);
-    }
 
     @GetMapping("/posts/{postId}")
     @Operation(summary = "피드 상세 조회", description = "피드 식별 ID를 이용하여 상세 본문을 1건 조회합니다. (더미)")
@@ -93,4 +89,44 @@ public class PostController {
         postService.deletePost(postId, userId);
         return ApiResTemplate.successWithNoContent(SuccessCode.POST_DELETE_SUCCESS.getHttpStatusCode(), SuccessCode.POST_DELETE_SUCCESS.getMessage());
     }
+
+    // 동아리 상세 조회
+    @GetMapping("/clubs/{clubId}")
+    @Operation(summary = "동아리 정보 조회 (신규)", description = "대시보드용 데이터(등록 멤버 수, 게시글 총 수, 최근 게시글 날짜 등)를 조회합니다.")
+    public ApiResTemplate<ClubInfoResponse> getClub(@PathVariable Long clubId) {
+        ClubInfoResponse response = clubService.getClub(clubId);
+
+        // 🛠️ 아직 ClubInfoResponse DTO 파일의 내부 구조를 받지 못해 임시로 null을 반환합니다.
+        // 나중에 해당 DTO에 필드가 채워지면 가짜 생성자로 조립해 내려줄 수 있습니다.
+        // ClubInfoResponse dummyResponse = null;
+        //return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), SuccessCode.GET_SUCCESS.getMessage(), dummyResponse);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), SuccessCode.GET_SUCCESS.getMessage(), response);
+    }
+
+    // 멤버 목록 조회
+    @GetMapping("/clubs/{clubId}/members")
+    @Operation(summary = "동아리 멤버 조회", description = "특정 동아리의 전체 회원 목록을 페이징하여 조회합니다.")
+    public ApiResTemplate<Page<ClubMemberResponse>> getClubMembers(
+            @PathVariable("clubId") Long clubId,
+            @ParameterObject Pageable pageable) {
+
+        Page<ClubMemberResponse> response = clubManagementService.getClubMembers(clubId, pageable);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "멤버 목록 조회가 완료되었습니다.", response);
+    }
+
+    /**
+    @GetMapping("/posts/user")
+    @Operation(summary = "유저별 피드 목록 조회", description = "로그인한 유저 본인이 여러 동아리에서 썼던 전체 피드 내역을 한눈에 페이징 조회합니다. (더미)")
+    public ApiResTemplate<Page<PostDetailResponse>> getUserPosts(
+            @RequestParam("userId") Long userId,
+            @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+
+        Page<PostDetailResponse> response = postService.getUserPosts(userId, pageable);
+
+        // Page<PostDetailResponse> dummyResponse = Page.empty(pageable);
+        // return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", dummyResponse);
+        return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "유저가 작성한 피드 조회가 완료되었습니다.", response);
+    }
+    **/
+
 }

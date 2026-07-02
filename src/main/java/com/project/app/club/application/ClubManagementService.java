@@ -75,7 +75,7 @@ public class ClubManagementService {
     }
 
     /**
-     * 2. 동아리 가입 (초대코드 검증 및 가입 완료)
+     * 4. 동아리 가입 (초대코드 검증 및 가입 완료)
      */
     @Transactional
     public void joinClub(Long clubId, Long userId, ClubJoinRequest requestDto) {
@@ -119,7 +119,7 @@ public class ClubManagementService {
     }
 
     /**
-     * 3. 동아리 내 내 활동 별명(프로필) 수정
+     * 5. 동아리 내 내 활동 별명(프로필) 수정
      */
     @Transactional
     public void updateMyProfile(Long clubId, Long userId, ClubMemberProfileUpdateRequest requestDto) {
@@ -130,6 +130,20 @@ public class ClubManagementService {
         // 🔥 수정 포인트: 엔티티 스펙에 맞춰 nickname 인자 하나만 넘기도록 수정!
         clubMember.updateProfile(requestDto.nickname());
     }
+
+    /**
+     * 특정 동아리 내 유저의 프로필(권한 등급 포함) 조회
+     */
+    public ClubMemberResponse getMyClubProfile(Long clubId, Long userId) {
+        // clubId와 userId로 ClubMember(매핑 테이블)를 조회
+        ClubMember clubMember = clubMemberRepository.findByClubIdAndUserId(clubId, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CLUB_MEMBER_NOT_FOUND));
+        // 예: "해당 동아리의 멤버가 아닙니다." 같은 예외 처리
+
+        // 엔티티를 Response DTO로 변환하여 반환
+        return ClubMemberResponse.from(clubMember);
+    }
+
 
     // [검증 가드 1] 동아리 존재 여부 확인
     private void validateClubExists(Long clubId) {

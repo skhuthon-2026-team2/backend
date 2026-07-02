@@ -1,5 +1,7 @@
 package com.project.app.user.application;
 
+import com.project.app.club.domain.ClubMember;
+import com.project.app.club.domain.ClubMemberRepository;
 import com.project.app.common.exception.BusinessException;
 import com.project.app.common.response.code.ErrorCode;
 import com.project.app.user.api.dto.MyFeedListResponse;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ClubMemberRepository clubMemberRepository; // 가입된 동아리 조회를 위해 주입
 
     /**
      * 특정 유저 정보 조회
@@ -29,6 +33,21 @@ public class UserService {
                         ErrorCode.USER_NOT_FOUND_EXCEPTION, "해당 유저를 찾을 수 없습니다. id=" + userId));
 
         return UserProfileResponse.from(user);
+    }
+
+    /**
+     * 마이페이지 통합 내 정보 조회 (새 기획 요구사항 반영)
+     */
+    public UserProfileResponse getMyIntegrationInfo(Long userId) {
+        // 1. 회원 기본 정보 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND_EXCEPTION, "존재하지 않는 회원입니다."));
+
+        // 2. 해당 회원이 가입한 모든 동아리 멤버 정보 목록 조회
+        List<ClubMember> myClubMembers = clubMemberRepository.findAllByUserId(userId);
+
+        // 3. 통합 매핑 데이터 반환 (of 메서드로 주입)
+        return UserProfileResponse.of(user, myClubMembers);
     }
 
     /**

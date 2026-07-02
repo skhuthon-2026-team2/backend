@@ -12,6 +12,8 @@ import com.project.app.post.domain.Post;
 import com.project.app.post.domain.PostRepository;
 import com.project.app.post.domain.Timeline;
 import com.project.app.post.domain.TimelineRepository;
+import com.project.app.user.domain.User;
+import com.project.app.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class TimelineService {
     private final TimelineRepository timelineRepository;
     private final ClubRepository clubRepository;
     private final PostRepository postRepository; // 게시글 조회를 위해 주입
+    private final UserRepository userRepository;
 
     /**
      * 1. 동아리 내 타임라인 목록 확인
@@ -67,15 +70,32 @@ public class TimelineService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CLUB_NOT_FOUND_EXCEPTION, "동아리를 찾을 수 없습니다."));
 
+        // 작성자 유저 조회 (Request DTO나 SecurityContextHolder 등에서 로그인된 userId를 가져온다고 가정)
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.CLUB_MEMBER_NOT_FOUND,ErrorCode.CLUB_NOT_FOUND_EXCEPTION.getMessage()));
+
         // 1. 타임라인 기본 객체 생성 및 저장
         Timeline timeline = Timeline.builder()
                 .club(club)
+                .user(user)
                 .title(request.title())
                 .build();
 
-        // 2. 선택된 게시글 ID 목록으로 게시글들을 조회하여 타임라인에 주입
-        List<Post> selectedPosts = postRepository.findAllById(request.postIds());
+        // 2.최적화 쿼리 호출: 성능 저하(N+1) 없이 한 번에 데이터 로딩
+        List<Post> selectedPosts = postRepository.findAllByIdsWithClub(request.postIds());
+
+        // 3. 동아리 ID 일치 여부 검증 및 타임라인 주입
         for (Post post : selectedPosts) {
+            Long postClubId = post.getClubMember().getClub().getId();
+
+            // 타깃 동아리 ID와 게시글의 동아리 ID가 다르면 얄짤없이 튕겨냅니다.
+            if (!postClubId.equals(clubId)) {
+                throw new BusinessException(
+                        ErrorCode.INVALID_POST_CLUB_EXCEPTION,
+                        ErrorCode.INVALID_INVITE_CODE.getMessage()
+                );
+            }
+
             timeline.addPost(post);
         }
 
@@ -98,6 +118,17 @@ public class TimelineService {
         return TimelineDetailResponse.from(timeline);
     }
 
+    /**
+     * 1. 내 타임라인 목록 확인
+     */
+    public Page<TimelineListResponse> getMyTimelines(Long userId, Pageable pageable) {
+       // validateClubExists(clubId);
+
+        Page<Timeline> timelines = timelineRepository.findAllByUser_Id(userId, pageable);
+        return timelines.map(TimelineListResponse::from);
+    }
+
+    // 존재하는 동아리인지
     private void validateClubExists(Long clubId) {
         if (!clubRepository.existsById(clubId)) {
             throw new BusinessException(ErrorCode.CLUB_NOT_FOUND_EXCEPTION, "존재하지 않는 동아리입니다.");

@@ -20,6 +20,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // 특정 유저가 작성한 피드 목록 조회 (ClubMember를 거쳐 userId 확인)
     Page<Post> findAllByClubMemberUserId(Long userId, Pageable pageable);
 
+    // 특정 동아리의 총 게시글 수 조회
+    Long countByClubMember_Club_Id(Long clubId);
+
     // 멤버 삭제 시 외래키(club_member_id)를 null로 밀어버리는 쿼리
     @Modifying(clearAutomatically = true) // 쿼리 실행 후 영속성 컨텍스트를 자동으로 비워줍니다.
     @Query("UPDATE Post p SET p.clubMember = null WHERE p.clubMember.id = :clubMemberId")
@@ -33,5 +36,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    @Query("select p from Post p join fetch p.clubMember cm join fetch cm.club c where p.id in :postIds")
+    List<Post> findAllByIdsWithClub(@Param("postIds") List<Long> postIds);
 
 }

@@ -2,7 +2,10 @@ package com.project.app.club.application;
 
 import com.project.app.club.api.dto.ClubCreateRequest;
 import com.project.app.club.api.dto.ClubInfoResponse;
+import com.project.app.club.api.dto.MyClubListResponse;
+import com.project.app.club.domain.ClubMember;
 import com.project.app.club.domain.ClubMemberRepository;
+import com.project.app.post.domain.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,7 @@ import com.project.app.club.api.dto.ClubUpdateRequest;
 import com.project.app.club.domain.Club;
 import com.project.app.club.domain.ClubRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,6 +25,7 @@ public class ClubService {
 
     private final ClubRepository clubRepository;
     private final ClubMemberRepository clubMemberRepository;
+    private final PostRepository postRepository;
 
     /**
      * 동아리 생성
@@ -51,7 +56,13 @@ public class ClubService {
                         ErrorCode.CLUB_NOT_FOUND_EXCEPTION,
                         ErrorCode.CLUB_NOT_FOUND_EXCEPTION.getMessage() + clubId));
 
-        return ClubInfoResponse.from(club);
+        // 2. 현재 등록 멤버 수 조회
+        Long currentMembers = clubMemberRepository.countByClubId(clubId);
+
+        // 3. 동아리 총 게시글 수 조회
+        Long totalPostCount = postRepository.countByClubMember_Club_Id(clubId);
+        // 4. DTO 조립하여 반환
+        return ClubInfoResponse.of(club, currentMembers, totalPostCount);
     }
 
     /**
@@ -70,26 +81,39 @@ public class ClubService {
 
         // 3. 엔티티 내부의 updateClubSettings 메서드를 호출하여 상태 변경 (Dirty Checking으로 자동 저장)
         club.updateClubSettings(
-                requestDto.clubName(),      // DTO의 clubName -> 엔티티의 name으로 매핑
-                requestDto.description(),
-                requestDto.clubImageUrl(),  // DTO의 clubImageUrl -> 엔티티의 imageUrl로 매핑
                 requestDto.maxMembers()
         );
+
+        // 3. 동아리 총 게시글 수 조회
+        Long totalPostCount = postRepository.countByClubMember_Club_Id(clubId);
 
         // 4. 🔥 레포지토리를 통해 가장 정확한 실시간 가입 멤버 수를 카운트해옵니다.
         long currentMembers = clubMemberRepository.countByClubId(clubId);
 
         // 5. 수정된 엔티티와 함께 현재 멤버 수를 DTO에 담아 반환
-        return ClubInfoResponse.of(club, currentMembers);
+        return ClubInfoResponse.of(club, currentMembers, totalPostCount);
     }
 
+    /**
+     * 내가 속한 동아리 목록 조회 (메인페이지 신규 기능)
+     */
+    public List<MyClubListResponse> getMyClubList(Long userId) {
+        // 1. 해당 유저가 가입한 모든 동아리 멤버 정보(연결고리) 조회
+        List<ClubMember> myClubMembers = clubMemberRepository.findAllByUserId(userId);
+
+        // 2. 가입한 동아리 엔티티들을 추출하여 DTO 형태로 변환
+        return myClubMembers.stream()
+                .map(clubMember -> {
+                    Club club = clubMember.getClub();
+                    // 각 동아리별 현재 실시간 총 멤버 수 카운트
+                    long currentMembers = clubMemberRepository.countByClubId(club.getId());
+                    return MyClubListResponse.of(club, currentMembers);
+                })
+                .toList();
+    }
+
+
     private void validateUpdateRequest(ClubUpdateRequest dto) {
-        if (dto.clubName() == null || dto.clubName().isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "동아리 이름은 필수 입력 항목입니다.");
-        }
-        if (dto.description() == null || dto.description().isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "동아리 설명은 필수 입력 항목입니다.");
-        }
         if (dto.maxMembers() == null || dto.maxMembers() <= 0) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "올바른 최대 가입 인원을 입력해 주세요.");
         }

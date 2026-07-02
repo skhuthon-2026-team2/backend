@@ -2,6 +2,7 @@ package com.project.app.post.application;
 
 import com.project.app.club.domain.ClubMember;
 import com.project.app.club.domain.ClubMemberRepository; // 가입 확인용 리포지토리
+import com.project.app.club.domain.ClubRole;
 import com.project.app.common.response.code.ErrorCode;
 import com.project.app.post.api.dto.PostCreateRequest;
 import com.project.app.post.api.dto.PostDetailResponse;
@@ -103,6 +104,33 @@ public class PostService {
             throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "삭제 권한이 없습니다.");
         }
 
+        postRepository.delete(post);
+    }
+
+    /**
+     *  7. 운영진 권한 피드 강제 삭제
+     */
+    @Transactional
+    public void forceDeletePostByAdmin(Long clubId, Long postId, Long adminUserId) {
+        // 1. 삭제할 게시글이 존재하는지 확인
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND_FEED, ErrorCode.POST_NOT_FOUND_FEED.getMessage()));
+
+        // 2. [보안 검증 A] 이 게시글이 요청 경로상에 입력된 동아리방의 글이 맞는지 크로스 체크
+        if (!post.getClubMember().getClub().getId().equals(clubId)) {
+            throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "해당 동아리에 속한 게시글이 아닙니다.");
+        }
+
+        // 3. [보안 검증 B] 삭제 요청을 보낸 유저(adminUserId)가 이 동아리의 소속원인지 확인
+        ClubMember requester = clubMemberRepository.findByClubIdAndUserId(clubId, adminUserId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CLUB_MEMBER_NOT_FOUND, "해당 동아리의 회원이 아닙니다."));
+
+        // 4. [보안 검증 C] 그 소속원의 등급 권한이 OWNER(관리자)가 맞는지 꼼꼼하게 검사
+        if (!requester.getRole().equals(ClubRole.OWNER)) {
+            throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "운영진 권한이 없어 강제 삭제가 불가능합니다.");
+        }
+
+        // 5. 모든 가드가 통과되면 안전하게 게시글 삭제
         postRepository.delete(post);
     }
 }
