@@ -44,9 +44,10 @@ public class TimelineController {
     @Operation(summary = "특정 날짜의 게시글 목록 조회", description = "타임라인 제작 시 특정 날짜에 작성된 게시글(사진, 제목, 날짜 포함)들을 조회합니다.")
     public ApiResTemplate<List<TimelineFeedResponse>> getFeedsByDate(
             @PathVariable("clubId") Long clubId,
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, //시작 날짜
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {   //끝 날짜
 
-        List<TimelineFeedResponse> response = timelineService.getFeedsByDate(clubId, date);
+        List<TimelineFeedResponse> response = timelineService.getFeedsByDate(clubId, startDate, endDate);
         return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "해당 날짜의 게시글 조회가 완료되었습니다.", response);
     }
 
@@ -55,9 +56,10 @@ public class TimelineController {
     @Operation(summary = "타임라인 최종 생성", description = "타임라인 제목과 선택된 게시글 ID 목록을 받아 타임라인을 생성합니다.")
     public ApiResTemplate<Void> createTimeline(
             @PathVariable("clubId") Long clubId,
+            @RequestParam("userId") Long userId,
             @RequestBody @Valid TimelineCreateRequest request) {
 
-        timelineService.createTimeline(clubId, request);
+        timelineService.createTimeline(clubId, userId, request);
         return ApiResTemplate.successWithNoContent(SuccessCode.TIMELINE_CRATE_SUCCESS.getHttpStatusCode(), SuccessCode.TIMELINE_CRATE_SUCCESS.getMessage());
     }
 
