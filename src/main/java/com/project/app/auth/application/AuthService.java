@@ -39,11 +39,14 @@ public class AuthService {
                     return userRepository.save(newUser);
                 });
 
+        // 2. 가입/조회 완료된 DB의 진짜 고유 식별자(PK)를 가져옵니다.
+        Long userId = user.getId();
+
         // 3. 저장되거나 조회된 유저의 서비스 고유 고유번호(PK)로 JWT 토큰 생성
         String accessToken = jwtUtil.createAccessToken(user.getId());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
 
         // 4. 생성된 토큰 바구니 반환
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponse(accessToken, refreshToken, userId);
     }
 }
