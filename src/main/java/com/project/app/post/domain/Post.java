@@ -1,31 +1,31 @@
 package com.project.app.post.domain;
 
-import com.project.app.club.domain.Club;
-import com.project.app.user.domain.User;
+import com.project.app.club.domain.ClubMember;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 어느 동아리에 쓴 피드인가? (외래키)
+    // 🔥 핵심 변경: 유저와 클럽을 각각 묶는 대신, 동아리 멤버 정보 하나만 참조합니다.
+    // 이를 통해 동아리 내 설정한 닉네임, 프로필 이미지, 역할을 전부 다 가져올 수 있습니다.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id", nullable = false)
-    private Club club;
-
-    // 누가 쓴 피드인가? (외래키)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "club_member_id", nullable = true)
+    private ClubMember clubMember;
 
     @Column(nullable = false)
     private String title;
@@ -34,11 +34,49 @@ public class Post {
     private String content;
 
     @Column(nullable = false)
-    private String imageUrl;
-
-    @Column(nullable = false)
     private LocalDate activityDate; // 캘린더 연/월/일 날짜 저장
 
-    @Column(nullable = false)
-    private Boolean isPublic = true; // 보류 기능 (기본값 true 설정)
+    // 생성한 날짜 저장
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    // 사진 URL 여러 장을 저장하기 위한 값 타입 컬렉션 설정
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "post_images", // 일대다 관계로 쪼개져서 생성될 자식 테이블 이름
+            joinColumns = @JoinColumn(name = "post_id") // 외래키 매핑
+    )
+    @Column(name = "image_url", nullable = false) // 저장될 컬럼명
+    private List<String> images = new ArrayList<>();
+
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @Builder
+    public Post(String title, String content, ClubMember clubMember, List<String> images) {
+        this.title = title;
+        this.content = content;
+        this.clubMember = clubMember;
+        this.createdAt = LocalDateTime.now();
+        if (images != null) {
+            this.images = images;
+        }
+    }
+
+
+    public void updatePost(String title, String content, List<String> imageUrls, LocalDate activityDate) {
+        this.title = title;
+        this.content = content;
+        this.activityDate = activityDate;
+
+        // 이미지 리스트가 들어왔을 경우 컬렉션 내용 초기화 후 재할당
+        if (imageUrls != null) {
+            this.images.clear();
+            this.images.addAll(imageUrls);
+        }
+    }
+
 }

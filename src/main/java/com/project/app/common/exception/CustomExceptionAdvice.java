@@ -31,11 +31,19 @@ public class CustomExceptionAdvice {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResTemplate<Void>> handleValidationException(MethodArgumentNotValidException e) {
-        String bindingMessage = e.getBindingResult().getFieldError() != null
-                ? e.getBindingResult().getFieldError().getDefaultMessage()
-                : "잘못된 입력값입니다.";
 
-        String fullMessage = ErrorCode.VALIDATION_EXCEPTION.getMessage() + bindingMessage;
+        // 🔥 1. 발생한 모든 유효성 에러 메시지를 수집해서 쉼표(,)로 연결합니다.
+        String bindingMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(org.springframework.validation.FieldError::getDefaultMessage)
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        // 만약 수집된 메시지가 없다면 기본 문구 세팅
+        if (bindingMessage.isBlank()) {
+            bindingMessage = "잘못된 입력값입니다.";
+        }
+
+        // 🔥 2. 기존의 ErrorCode 메시지를 더하는 로직 대신, 추출한 bindingMessage만 그대로 사용합니다.
+        String fullMessage = bindingMessage;
         log.error("ValidationException 발생: {}", fullMessage, e);
 
         return ResponseEntity
