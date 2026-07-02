@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -39,5 +40,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p from Post p join fetch p.clubMember cm join fetch cm.club c where p.id in :postIds")
     List<Post> findAllByIdsWithClub(@Param("postIds") List<Long> postIds);
+
+    // ⭕ 타임라인 생성 시 게시글들을 동아리(Club) 정보까지 묶어서 한 번에 가져오는 최적화 메서드
+    @Query("select p from Post p join fetch p.clubMember cm join fetch cm.club c where p.id = :id")
+    Optional<Post> findByIdWithClub(@Param("id") Long id);
 
 }

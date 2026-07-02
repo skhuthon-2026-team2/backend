@@ -49,15 +49,6 @@ public class Post {
     @Column(name = "image_url", nullable = false) // 저장될 컬럼명
     private List<String> images = new ArrayList<>();
 
-    // 타임라인과의 연관관계 매핑 (하나의 타임라인에 여러 게시글이 들어감)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "timeline_id", nullable = true) // 타임라인에 지정되지 않은 일반 게시글도 있으므로 true
-    private Timeline timeline;
-
-    //  Timeline 엔티티의 편의 메서드(addPost)에서 호출할 연관관계 설정 메서드
-    public void assignTimeline(Timeline timeline) {
-        this.timeline = timeline;
-    }
 
     @PrePersist
     protected void onCreate() {
