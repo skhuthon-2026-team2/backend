@@ -18,6 +18,7 @@ public enum SuccessCode {
     POST_DELETE_SUCCESS(HttpStatus.OK, "피드가 성공적으로 삭제되었습니다."),
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃이 성공적으로 완료되었습니다."),
     TOKEN_REISSUE_SUCCESS(HttpStatus.OK, "Access Token이 성공적으로 재발급되었습니다."),
+    FILE_DELETE_SUCCESS(HttpStatus.OK, "파일이 성공적으로 삭제되었습니다."),
 
     /**
      * 201 CREATED (생성 성공)
@@ -25,8 +26,8 @@ public enum SuccessCode {
     LOGIN_SUCCESS(HttpStatus.CREATED, "로그인이 성공적으로 완료되었습니다."),
     CLUB_SAVE_SUCCESS(HttpStatus.CREATED, "동아리가 성공적으로 개설되었습니다."),
     CLUB_JOIN_SUCCESS(HttpStatus.CREATED, "동아리 가입 신청이 성공적으로 완료되었습니다."),
-    POST_SAVE_SUCCESS(HttpStatus.CREATED, "피드가 성공적으로 등록되었습니다.");
-
+    POST_SAVE_SUCCESS(HttpStatus.CREATED, "피드가 성공적으로 등록되었습니다."),
+    FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "파일이 성공적으로 업로드되었습니다.");
 
     private final HttpStatus httpStatus;   // HTTP 상태 코드를 스프링에서 쉽게 작성하기 위한 enum값들의 모임
     private final String message;          // 응답 메세지
