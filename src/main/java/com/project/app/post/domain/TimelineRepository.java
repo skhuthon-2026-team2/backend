@@ -14,5 +14,7 @@ public interface TimelineRepository extends JpaRepository<Timeline, Long> {
     // 💡 특정 동아리에 생성된 타임라인 목록을 페이징하여 조회합니다. (첫 번째 사진 목록용)
     Page<Timeline> findAllByClubId(Long clubId, Pageable pageable);
 
+    Page<Timeline> findAllByUser_Id(Long userId, Pageable pageable);
+
 
 }

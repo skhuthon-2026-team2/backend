@@ -7,6 +7,8 @@ import com.project.app.post.domain.Post;
 public record TimelineListResponse(
         Long timelineId,
         String title,
+        Long clubId,                  // 🔥 추가: 어떤 동아리의 타임라인인지 식별
+        String clubName,              // 🔥 추가: 동아리 이름 (화면 표시용)
         String representativeImageUrl // 타임라인 카드를 채울 대표 이미지 1장
 ) {
     public static TimelineListResponse from(Timeline timeline) {
@@ -20,6 +22,8 @@ public record TimelineListResponse(
         return new TimelineListResponse(
                 timeline.getId(),
                 timeline.getTitle(),
+                timeline.getClub().getId(),
+                timeline.getClub().getName(), // Club 엔티티의 이름 필드 매핑
                 repUrl
         );
     }

@@ -1,6 +1,7 @@
 package com.project.app.post.domain;
 
 import com.project.app.club.domain.Club;
+import com.project.app.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,10 @@ public class Timeline {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id", nullable = false)
     private Club club;
@@ -31,8 +36,9 @@ public class Timeline {
     private List<Post> posts = new ArrayList<>();
 
     @Builder
-    public Timeline(Club club, String title) {
+    public Timeline(Club club, User user, String title) {
         this.club = club;
+        this.user = user;
         this.title = title;
     }
 

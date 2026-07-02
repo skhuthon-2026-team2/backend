@@ -3,6 +3,8 @@ package com.project.app.club.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "clubs")
@@ -16,6 +18,7 @@ public class Club {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 동아리 이름
     @Column(nullable = false)
     private String name;
 
@@ -31,11 +34,11 @@ public class Club {
     @Column(nullable = false)
     private Integer maxMembers;
 
+
+
+
     // 운영자가 동아리 관리 페이지에서 수정을 쉽게 하기 위한 메서드 (제미나이가 추천해줘서 추가했습니다)
-    public void updateClubSettings(String name, String description, String imageUrl, Integer maxMembers) {
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
+    public void updateClubSettings(Integer maxMembers) {
         this.maxMembers = maxMembers;
     }
 }

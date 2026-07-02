@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Tag(name = "Club Timeline", description = "동아리 타임라인 관련 API")
+@Tag(name = "타임라인", description = "동아리 타임라인 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/clubs/{clubId}/timelines")
@@ -39,7 +39,7 @@ public class TimelineController {
         return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "타임라인 목록 조회가 완료되었습니다.", response);
     }
 
-    // 2-1. [두 번째 사진] 특정 날짜에 생성된 게시글(피드) 목록 조회
+    // 특정 날짜에 생성된 게시글(피드) 목록 조회
     @GetMapping("/feeds")
     @Operation(summary = "특정 날짜의 게시글 목록 조회", description = "타임라인 제작 시 특정 날짜에 작성된 게시글(사진, 제목, 날짜 포함)들을 조회합니다.")
     public ApiResTemplate<List<TimelineFeedResponse>> getFeedsByDate(
@@ -50,7 +50,7 @@ public class TimelineController {
         return ApiResTemplate.success(SuccessCode.GET_SUCCESS.getHttpStatusCode(), "해당 날짜의 게시글 조회가 완료되었습니다.", response);
     }
 
-    // 2-2. [두 번째 사진] 타임라인 생성 및 제목/선택된 게시글들 저장
+    // 타임라인 생성 및 제목/선택된 게시글들 저장
     @PostMapping
     @Operation(summary = "타임라인 최종 생성", description = "타임라인 제목과 선택된 게시글 ID 목록을 받아 타임라인을 생성합니다.")
     public ApiResTemplate<Void> createTimeline(

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "club_members")
 @Getter
@@ -36,13 +38,25 @@ public class ClubMember {
     @Column(nullable = false)
     private ClubRole role;
 
+    // 생성한 날짜 저장
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+
     @Builder
-    public ClubMember(Club club, User user, String nickname, String profileImage, ClubRole role) {
+    public ClubMember(Club club, User user, String nickname, String profileImage, ClubRole role, LocalDateTime createdAt) {
         this.club = club;
         this.user = user;
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.role = role;
+        // 생성값이 없으면 현재 시간으로
+        this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
     }
 
     // 🔥 3번 요구사항: 동아리 내 프로필(닉네임) 수정 메서드

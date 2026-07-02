@@ -30,6 +30,7 @@ public enum ErrorCode {
     INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "초대 코드가 일치하지 않습니다."),
     CLUB_MAX_MEMBERS_EXCEEDED(HttpStatus.BAD_REQUEST, "동아리의 정원이 초과되어 더 이상 가입할 수 없습니다."),
     UNAUTHORIZED_ACCESS(HttpStatus.BAD_REQUEST, "해당 동아리의 타임라인이 아닙니다."),
+    INVALID_POST_CLUB_EXCEPTION(HttpStatus.BAD_REQUEST, "해당 동아리의 게시글이 아닙니다."),
 
     /**
      * 401 UNAUTHORIZED (인증 실패)
