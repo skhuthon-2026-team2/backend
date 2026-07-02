@@ -14,7 +14,6 @@ public enum ErrorCode {
      */
     USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 사용자가 없습니다. userId = "),
     CLUB_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 동아리가 없습니다. clubId = "),
-    POST_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 피드가 없습니다. postId = "),
     POST_NOT_FOUND_FEED(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
     CLUB_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 동아리의 소속 멤버가 아닙니다."),
     TIMELINE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 타임라인입니다."),
