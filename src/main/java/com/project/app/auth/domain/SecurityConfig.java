@@ -59,7 +59,7 @@ public class SecurityConfig {
 
         // 요청을 허용할 프론트엔드 도메인 주소들을 등록합니다. (끝에 주소 슬래시(/)나 상세 경로는 제외해야 합니다)
         configuration.setAllowedOrigins(Arrays.asList(
-                "https://front-six-weld.vercel.app",
+                "https://front-gn7x.vercel.app",
                 "http://localhost:5173"
         ));
 
